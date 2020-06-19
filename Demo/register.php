@@ -59,7 +59,7 @@
 <body>
     <?php
         if(isset($string)){
-            echo "<b>Error message: $string<b>";
+            echo "<b>Error message: $string ---TEST<b>";
         }
     ?>
 
