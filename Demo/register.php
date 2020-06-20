@@ -15,6 +15,7 @@
         if(!$email || !$username || !$pass1 || !$pass2 || !$fname || !$lname){
             //DATA MISSED
             $vaild = FALSE;
+            $string .= "Missed input, ";
         } else {
             //DATA FILLED CORRECTLY
             if(validatePasswords($pass1, $pass2) == FALSE){
@@ -26,11 +27,13 @@
             if(checkForUsername($username) == TRUE){
                 //USERNAME NOT FREE
                 $vaild = FALSE;
+                $string .= "Username unavailable, ";
             } 
     
             if(checkForEmail($email) == TRUE){
                 //EMAIL NOT FREE
                 $vaild = FALSE;
+                $string .= "Email address invalid, ";
             }
         }
     
@@ -39,10 +42,7 @@
             createNewPublicUser($email, $username, $pass1, $fname, $lname);
             echo "<p>User added<p>";
             exit();
-        } else {
-            //Reload page
-            //echo "<p>Please try again<p>";
-        }   
+        } 
     }
 
 ?>
@@ -59,7 +59,7 @@
 <body>
     <?php
         if(isset($string)){
-            echo "<b>Error message: $string ---TEST<b>";
+            echo "<b>Error: $string <b>";
         }
     ?>
 
