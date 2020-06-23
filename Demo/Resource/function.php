@@ -1,4 +1,5 @@
 <?php
+    session_start();
     include('conn.php');
     include('Parsedown.php');
 
@@ -232,7 +233,7 @@ function ConvertPageMarkdown($pageid){
 }
 
 #### FUNCTION FOR LOGIN PROCESS
-### included in login.php
+### included in login.php, logout.php, header.php
 ##
 #
 
@@ -281,6 +282,22 @@ function getUserType($userid){
     $row = $queryReturn->fetch_assoc();
     $usertype = $row['UserTypeID'];
     return $usertype;
+}
+
+/* Fuction to unset log in session variable
+*/
+function logout(){
+    unset($_SESSION['userid']);
+}
+
+/* Fuction to check if a login session variable has been created
+*/
+function isLoggedIn(){
+    if(isset($_SESSION['userid'])){
+        return TRUE;
+    } else {
+        return FALSE;
+    }
 }
 
 #### FUNCTIONS FOR REGISTRATION PROCESS
@@ -346,5 +363,41 @@ function createNewPublicUser($email, $username, $password, $firstname, $lastname
     global $conn;
     $query = "INSERT INTO `User` (`UserID`, `UserTypeID`, `FirstName`, `LastName`, `Username`, `Email`, `Password`) VALUES (NULL, '1', '".$conn->real_escape_string($firstname)."', '".$conn->real_escape_string($lastname)."', '".$conn->real_escape_string($username)."', '".$conn->real_escape_string($email)."', SHA1('".$conn->real_escape_string($password)."'));";
     $queryReturn = $conn->query($query);
+}
+
+#### FUNCTION FOR SECURITY/ACCESS
+### included in createDomain.php
+##
+#
+
+function runLoggedInCheck(){
+    if(!isset($_SESSION['userid'])){
+        header("Location: index.php");
+    } 
+}
+
+#### FUNCTION FOR CREATING DOMAIN
+### included in  createDomain.php
+##
+#
+
+/* Fuction to check for an existing domain by name, returning T if existing and F otherwise
+*/
+function checkDomainName($domainName){
+    global $conn;
+    $query ="SELECT Name FROM Domain WHERE Name='".$conn->real_escape_string($domainName)."';";
+    $queryReturn = $conn->query($query);
+    
+    if(!$queryReturn){
+        echo $conn->error;
+    } 
+    
+    if (mysqli_num_rows($queryReturn)==0) { 
+        return FALSE;
+    } elseif (mysqli_num_rows($queryReturn)==1) { 
+        return TRUE;
+    } elseif (mysqli_num_rows($queryReturn)==2) { 
+        return 'ERROR: Multiple records';
+    }
 }
 ?>

@@ -1,22 +1,24 @@
 <?php
-    include('Resource/function.php');
+    include('Resource/header.php');
     $path = $_REQUEST['Path'];
     $containerid = getPathContainerID($path);
     
     echo "<div>
             <h2>Path: $path</h2>
-          </div><br>";
+          ";
 
     //Return Link
     if (getPathLength($path) <= 1){
       echo "<div>
               <a style='display:inline' href='index.php'>Back</a>
-            </div>";
+            </div>
+            </div><br>";
     } else {
       $oldPath = getParentPath($path);
       echo "<div>
               <a style='display:inline' href='view.php?Path=$oldPath'>Back</a>
-            </div>";
+            </div>
+            </div><br>";
     }
 
     
@@ -43,5 +45,7 @@
           <p style='display:inline'>Page: </p><a style='display:inline' href='page.php?Path=$newPath'>$name</a>
          </div>";
     }
+
+    include('Resource/footer.php');
 
 ?>

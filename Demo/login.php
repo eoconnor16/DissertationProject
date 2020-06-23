@@ -1,5 +1,4 @@
 <?php
-    session_start();
     include('Resource/function.php');
 ?>
 <!DOCTYPE html>
@@ -42,7 +41,7 @@
             $usertypeid = getUserType($userid);
 
             if($usertypeid == 1){
-                echo "<b>Public user</b>";
+                header("Location: index.php");
             } elseif ($usertypeid == 2){
                 echo "<b>Admin</b>";
             }

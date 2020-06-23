@@ -1,7 +1,9 @@
 <?php
 
-include('Resource/function.php');
-$print = checkLoginDetails('teste', 'password');
-echo $print;
+include('Resource/header.php');
+runLoggedInCheck();
+echo "CAN YOU SEE THIS??";
+
+include('Resource/footer.php');
 
 ?>
