@@ -1,18 +1,28 @@
 <?php
+$title = "Home";
 include('Resource/header.php');
 
-//Display all Domains
+//Display all Public Domains
 echo "
 <div>
   <h1>All Domains</h1>
 </div><br>";
 
-$domains = returnAllDomains();
+//Check if logged in
+$domains;
 
+if(isset($_SESSION['userid'])){
+  $userid = $_SESSION['userid'];
+  $domains = returnAllDomains($userid);
+} else {
+  $domains = returnAllPublicDomains();
+}
+
+//Print all domains
 for ($i = 0; $i < count($domains); $i++)  {
- $id = $domains[$i][0];
- $name = $domains[$i][1];
- $containerid = $domains[$i][2];
+ $id = $domains[$i]['DomainID'];
+ $name = $domains[$i]['Name'];
+ $containerid = $domains[$i]['ContainerID'];
 
  echo "<div>
    <a style='display:inline' href='view.php?Path=$name'>$name</a>

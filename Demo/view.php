@@ -42,7 +42,7 @@
         $newPath = "$path/$pagename";
        
         echo "<div>
-          <p style='display:inline'>Page: </p><a style='display:inline' href='page.php?Path=$newPath'>$name</a>
+          <p style='display:inline'>Page: </p><a style='display:inline' href='page.php?Path=$newPath'>$pagename</a>
          </div>";
     }
 
