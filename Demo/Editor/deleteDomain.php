@@ -6,41 +6,37 @@ include('../Resource/header.php');
 $path = $_REQUEST['Path'];
 runLoggedInCheck('../index.php');
 $userID = $_SESSION['userid'];
-if(!hasAccess($userID, $path, accessLevel::editor)){
+if(!hasAccess($userID, $path, accessLevel::admin)){
     header("Location: ../index.php");
 }
 
-//PAGE DELETE 
-//1 - Get container data
+//1 - Get variables
 $complete = FALSE;
 
-$containerID = getPathContainerID($path);
-$contianerData = getContainerData($containerID);
-$name = $contianerData[2];
-
-//3 - Delete page
+//3 - Delete domain
 if(isset($_POST['delete'])){
-    deleteContainer($path);
+    deleteDomain($path);
     $complete = TRUE;
 } elseif(isset($_POST['cancel'])){
-    header("Location: editContent.php?Path=$path");
+    header("Location: domainSettings.php?Path=$path");
 }
 
-//2 - Prompt user for conformation
+//2 - Prompt user for confirmation
 if($complete == FALSE){
     echo "
-        <b>Are you sure you want to delete $name from $path ?</b>
+        <b>Are you sure you want to delete the domain $path? This cannot be undone</b>
       <form method='POST'>
       <div class='form-group'><button class='btn btn-secondary' name='delete' type='submit'>Delete</button></div>
       <div class='form-group'><button class='btn btn-secondary' name='cancel' type='submit'>Cancel</button></div>
     </form>
       ";
-  } elseif($complete == TRUE){
+} elseif($complete == TRUE){
     echo "
-      <b>Process Complete</b>
+      <b>Domain has been deleted</b>
+      <div><a href='index.php'><button type='button' class='btn btn-outline-success'>Back</button></a><br></div>
     ";
-  }
+}
+
 
 include('../Resource/footer.php');
-
 ?>

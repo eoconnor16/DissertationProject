@@ -2,8 +2,16 @@
 $directory = "../";
 include('../Resource/header.php');
 
-//Get all editors of this domain, print list and allow remove option
+//Access check
 $path = $_REQUEST['Path'];
+runLoggedInCheck('../index.php');
+$userID = $_SESSION['userid'];
+if(!hasAccess($userID, $path, accessLevel::admin)){
+    header("Location: ../index.php");
+}
+
+//Get all editors of this domain, print list and allow remove option
+
 $editors = getEditors($path);
 
 if(sizeof($editors) == 0){
@@ -24,7 +32,7 @@ if(sizeof($editors) == 0){
 
 //Option to assign new editor
 echo "<div>
-<a href=''><button type='button' class='btn btn-success'>Assign Editor</button></a>
+<a href='addEditor.php?Path=$path'><button type='button' class='btn btn-success'>Add Editor</button></a>
 </div>";
 
 

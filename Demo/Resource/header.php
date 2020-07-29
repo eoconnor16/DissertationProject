@@ -18,9 +18,11 @@
     }
 
     if(isLoggedIn() == TRUE){
-      echo "
+      $userID = $_SESSION['userid'];
+      if(isSystemAdmin($userID)){
+        echo "
       <nav class='navbar navbar-expand-lg navbar-dark bg-dark'>
-        <a class='navbar-brand' href='index.php'>Wiki</a>
+        <a class='navbar-brand' href='".$directory."index.php'>Wiki</a>
 
         <div class='navbar-nav-scroll' id='navbarNav'>
           <ul class='navbar-nav'>
@@ -29,6 +31,12 @@
             </li>
             <li class='nav-item active'>
               <a class='nav-link' href='".$directory."createDomain.php'>Create Domain</a>
+            </li>
+            <li class='nav-item active'>
+              <a class='nav-link' href='".$directory."Editor/index.php'>Editor</a>
+            </li>
+            <li class='nav-item active'>
+              <a class='nav-link' href=''>Requests</a>
             </li>
           </ul>
         </div>
@@ -39,6 +47,33 @@
         </form>
       </nav>
       ";
+      } else {
+        echo "
+      <nav class='navbar navbar-expand-lg navbar-dark bg-dark'>
+        <a class='navbar-brand' href='".$directory."index.php'>Wiki</a>
+
+        <div class='navbar-nav-scroll' id='navbarNav'>
+          <ul class='navbar-nav'>
+            <li class='nav-item active'>
+              <a class='nav-link' href='".$directory."logout.php'>Logout</a>
+            </li>
+            <li class='nav-item active'>
+              <a class='nav-link' href='".$directory."createDomain.php'>Create Domain</a>
+            </li>
+            <li class='nav-item active'>
+              <a class='nav-link' href='".$directory."Editor/index.php'>Editor</a>
+            </li>
+          </ul>
+        </div>
+
+        <form class='form-inline my-2'>
+          <input class='form-control mr-sm-2' type='search' placeholder='Search' aria-label='Search'>
+          <button class='btn btn-outline-success my-2 my-sm-0' type='submit'>Search</button>
+        </form>
+      </nav>
+      ";
+      }
+      
     } else {
       echo "
       <nav class='navbar navbar-expand-lg navbar-dark bg-dark'>

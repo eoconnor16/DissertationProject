@@ -37,14 +37,8 @@
             //Create session variable
             $_SESSION['userid'] = $userid;
 
-            //Check usertype and redirect
-            $usertypeid = getUserType($userid);
-
-            if($usertypeid == 1){
-                header("Location: index.php");
-            } elseif ($usertypeid == 2){
-                echo "<b>Admin</b>";
-            }
+            //redirect
+            header("Location: index.php");
 
         } else {
             echo "<p>Please try again<p>";

@@ -2,8 +2,13 @@
 $directory = "../";
 include('../Resource/header.php');
 
-//Get path and check current privacy state
+//Access check
 $path = $_REQUEST['Path'];
+runLoggedInCheck('../index.php');
+$userID = $_SESSION['userid'];
+if(!hasAccess($userID, $path, accessLevel::admin)){
+    header("Location: ../index.php");
+}
 
 /* Check if a path has a linked usergroup, if not make one
 */

@@ -7,7 +7,7 @@ $path = $_REQUEST['Path'];
 
 runLoggedInCheck('../index.php');
 $userID = $_SESSION['userid'];
-if(!hasAccess($userID, $path, 1)){
+if(!hasAccess($userID, $path, accessLevel::editor)){
     header("Location: ../index.php");
 }
 

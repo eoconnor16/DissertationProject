@@ -2,9 +2,15 @@
 $directory = "../";
 include('../Resource/header.php');
 
-//Get path and check current privacy state
+//Access check
 $path = $_REQUEST['Path'];
+runLoggedInCheck('../index.php');
+$userID = $_SESSION['userid'];
+if(!hasAccess($userID, $path, accessLevel::admin)){
+    header("Location: ../index.php");
+}
 
+//Check current privacy state
 //If Public - prompt user if they want to change to private
 if(isPublic($path)){
     //Review form 

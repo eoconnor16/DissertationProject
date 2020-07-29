@@ -2,8 +2,16 @@
 $directory = "../";
 include('../Resource/header.php');
 
-//Get all admins of this domain, print list and allow remove option
+//Access check
 $path = $_REQUEST['Path'];
+runLoggedInCheck('../index.php');
+$userID = $_SESSION['userid'];
+if(!hasAccess($userID, $path, accessLevel::systemAdmin)){
+    header("Location: ../index.php");
+}
+
+//Get all admins of this domain, print list and allow remove option
+
 $admins = getAdmins($path);
 
 if(sizeof($admins) == 0){
@@ -16,7 +24,7 @@ if(sizeof($admins) == 0){
         $username = $data['Username'];
         echo "<div>
         <p>$username</p>
-        <a href=''><button type='button' class='btn btn-danger'>Remove</button></a>
+        <a href='removeAdmin.php?Path=$path&Editor=$username'><button type='button' class='btn btn-danger'>Remove</button></a>
         </div>";
     }
     echo "</div>";
@@ -24,7 +32,7 @@ if(sizeof($admins) == 0){
 
 //Option to assign new editor
 echo "<div>
-<a href=''><button type='button' class='btn btn-success'>Assign Editor</button></a>
+<a href='addAdmin.php?Path=$path'><button type='button' class='btn btn-success'>Assign Editor</button></a>
 </div>";
 
 

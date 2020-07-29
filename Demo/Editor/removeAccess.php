@@ -1,8 +1,16 @@
 <?php
 include('Resource/header.php');
 
-//1 - Get Accessor Data
+//Access check
 $path = $_REQUEST['Path'];
+runLoggedInCheck('../index.php');
+$userID = $_SESSION['userid'];
+if(!hasAccess($userID, $path, accessLevel::admin)){
+    header("Location: ../index.php");
+}
+
+//1 - Get Accessor Data
+
 $user = $_REQUEST['User'];
 $userData = getUserDataByUsername($user);
 $userID = $userData['UserID'];

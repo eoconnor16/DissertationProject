@@ -1,14 +1,21 @@
 <?php
-include('Resource/header.php');
+$directory = "../";
+include('../Resource/header.php');
 
-//Set Access
+//Access check
+$path = $_REQUEST['Path'];
+runLoggedInCheck('../index.php');
+$userID = $_SESSION['userid'];
+if(!hasAccess($userID, $path, accessLevel::systemAdmin)){
+    header("Location: ../index.php");
+}
 
-//Get data
-$path = "Sports";//$_REQUEST['Path'];
 
 //Validate form
 $complete = FALSE;
 $nameError = "";
+$userError = "";
+$editorError = "";
 
 if(isset($_POST['cancel'])){
     header("Location: viewAdmins.php?Path=$path");
@@ -22,6 +29,18 @@ if(isset($_POST['request'])){
     if(!$name || !checkForUsername($name)){
         $check = FALSE;
         $nameError = "Error: No such username '$name'";
+    }
+
+    //Check if user is already an admin
+    if(isAdmin($name, $path)){
+        $check = FALSE;
+        $userError = "Error: '$name' is already assigned as an admin";
+    }
+
+    //Check if user is an editor
+    if(isEditor($name, $path)){
+        $check = FALSE;
+        $editorError = "Error: '$name' is already assigned as an editor";
     }
 
     //If all correct add new record
@@ -44,6 +63,22 @@ if($complete == FALSE){
           </div>
           ";
         }
+
+        if($userError != ""){
+            echo "
+            <div class='alert alert-danger' role='alert'>
+              $userError
+            </div>
+            ";
+        }
+
+        if($editorError != ""){
+            echo "
+            <div class='alert alert-danger' role='alert'>
+              $editorError
+            </div>
+            ";
+        }
       
       echo
             "<div class='form-group'><!-- Username -->
@@ -61,8 +96,9 @@ if($complete == FALSE){
     echo "<div>
       <p><b>$name</b> has been added as an admin to <b>$path</b></p> 
       </div>
+      <div><a href='viewAdmins.php?Path=$path'><button type='button' class='btn btn-outline-success'>Back</button></a><br></div>
     ";
 }
 
-include('Resource/footer.php');
+include('../Resource/footer.php');
 ?>

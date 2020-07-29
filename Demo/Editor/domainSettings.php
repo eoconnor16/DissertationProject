@@ -19,20 +19,22 @@ if(isDomainEditor($domainID, $userID) == TRUE || isDomainAdmin($domainID, $userI
 }
 if(isDomainAdmin($domainID, $userID) == TRUE || isSystemAdmin($userID) == TRUE){
     //Access to domain admin settings
-    //echo "ADMIN ACCESS<br>";
     echo "
     <div><a href='viewEditors.php?Path=$path'><button type='button' class='btn btn-outline-success'>Assign/Remove Editor</button></a><br></div>
-    <div><a href=''><button type='button' class='btn btn-outline-success'>Privacy Settings</button></a><br></div>
-    <div><a href=''><button type='button' class='btn btn-outline-success'>Delete Domain</button></a><br></div>
+    <div><a href='privacySettings.php?Path=$path'><button type='button' class='btn btn-outline-success'>Privacy Settings</button></a><br></div>
+    <div><a href='deleteDomain.php?Path=$path'><button type='button' class='btn btn-outline-success'>Delete Domain</button></a><br></div>
     ";
 } 
 if(isSystemAdmin($userID) == TRUE){
     //Access to all domain settings
-    //echo "SYS ADMIN ACCESS";
     echo "
-    <div><a href=''><button type='button' class='btn btn-outline-success'>Assign/Remove Admin</button></a><br></div>
+    <div><a href='viewAdmins.php?Path=$path'><button type='button' class='btn btn-outline-success'>Assign/Remove Admin</button></a><br></div>
     ";
 } 
+if(!isDomainEditor($domainID, $userID) == TRUE && !isDomainAdmin($domainID, $userID) == TRUE && !isSystemAdmin($userID) == TRUE){
+    //No access
+    
+}
 
 include('../Resource/footer.php');
 ?>

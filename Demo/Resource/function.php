@@ -2,6 +2,7 @@
     session_start();
     include('conn.php');
     include('Parsedown.php');
+    include('accessLevel.php');
 
 #### FUNCTIONS FOR LOADING DOMAIN PROCESS
 ### included in index.php, view.php, page.php
@@ -447,6 +448,8 @@ function runLoggedInCheck($location){
     } 
 }
 
+
+
 /* Function to check if a user has the appropriate access to a path, returning T/F
 */
 function hasAccess($userID, $path, $accessLevel){
@@ -454,22 +457,38 @@ function hasAccess($userID, $path, $accessLevel){
     $ans = FALSE;
     $domainID = getPathDomainID($path);
 
+    $readOnly = accessLevel::readOnly;
+    $editor = accessLevel::editor;
+    $admin = accessLevel::admin;
+    $systemAdmin = accessLevel::systemAdmin;
+
     //Check asscess level
-
-    // NOTE : Include a readOnly access level
-
-    switch ($accessLevel) {
-        case 1: // User needs to be Editor, Admin or system admin
+    switch ($accessLevel){
+        case $readOnly:
+            //We want to check the domain to see if it is public
+            if(isPublicAndActive($path)){
+                $ans = TRUE;
+            } elseif(isPrivateAndActive($path)){
+                //If private we need to check if user has access
+                if(isUserGroupMember($path, $userID)){
+                    $ans = TRUE;
+                }
+            }
+            
+            break;
+        case $editor: // User needs to be Editor, Admin or system admin
             if(isDomainEditor($domainID, $userID) == TRUE || isDomainAdmin($domainID, $userID) == TRUE || isSystemAdmin($userID) == TRUE){
                 $ans = TRUE;
             }
           break;
-        case 2: // User needs to be Admin or system admin
+
+        case $admin: // User needs to be Admin or system admin
             if(isDomainAdmin($domainID, $userID) == TRUE || isSystemAdmin($userID) == TRUE){
                 $ans = TRUE;
             }
           break;
-        case 3: // User needs to be system admin
+
+        case $systemAdmin: // User needs to be system admin
             if(isSystemAdmin($userID) == TRUE){
                 $ans = TRUE;
             }
@@ -1112,7 +1131,7 @@ function deleteContainer($path){
 }
 
 #### FUNCTIONS FOR Assigning/Deleteing EDITORS
-### included in Editor/viewEditors.php, removeEditor.php
+### included in Editor/viewEditors.php, removeEditor.php, addEditor.php
 ##
 #
 
@@ -1140,32 +1159,6 @@ function getEditors($path){
     }
     
     return $editors;
-}
-
-/* Function to get all the admins of a domain and return an array of userID's 
-*/
-function getAdmins($path){
-    $domainID = getPathDomainID($path);
-    $admins = array();
-
-    //Get all editors of this domain and add to array
-    global $conn;
-    $containers = array();
-    $query ="SELECT * FROM `Domain_Roles` WHERE DomainID='".$conn->real_escape_string($domainID)."' AND RoleID='1';";
-    $queryReturn = $conn->query($query);
-    
-    if(!$queryReturn){
-        echo $conn->error;
-    }   
-    
-    if (mysqli_num_rows($queryReturn) >= 1) { 
-        while($row = $queryReturn->fetch_assoc()){
-            $id = $row['UserID'];
-            array_push($admins, $id);
-        }
-    }
-    
-    return $admins;
 }
 
 /* Function returning domain data base on userID, returning array with firstname, lastname, containerid and statusid
@@ -1197,7 +1190,7 @@ function getUserData($userID){
    
 }
 
-/* Function returning domain data base on containerid, returning array with firstname, lastname, containerid and statusid
+/* Function returning all user data from user table
 */
 function getUserDataByUsername($username){
     global $conn;
@@ -1234,7 +1227,102 @@ function removeEditor($userID, $path){
     $domainID =  getPathDomainID($path);
     
     //Need to get all sub containers
-    $query = "DELETE FROM `Domain_Roles` WHERE DomainID='".$conn->real_escape_string($domainID)."' AND UserID='".$conn->real_escape_string($userID)."';";
+    $query = "DELETE FROM `Domain_Roles` WHERE DomainID='".$conn->real_escape_string($domainID)."' AND UserID='".$conn->real_escape_string($userID)."' AND RoleID='2';";
+    $conn->query($query);
+}
+
+/* Function to add a new editor to a domain
+*/
+function addEditor($username, $path){
+    global $conn;
+    //Get data needed
+    $domainID =  getPathDomainID($path);
+    $userData = getUserDataByUsername($username);
+    $userID = $userData['UserID'];
+
+    //Add new editor
+    $query ="INSERT INTO `Domain_Roles` (`DomainID`, `UserID`, `RoleID`) VALUES ('".$conn->real_escape_string($domainID)."', '".$conn->real_escape_string($userID)."', '2');";
+    $conn->query($query);
+}
+
+/* Function to check if a user is a domain editor, returning T/F
+*/
+function isEditor($username, $path){
+    global $conn;
+    //Get data needed
+    $domainID =  getPathDomainID($path);
+    $userData = getUserDataByUsername($username);
+    $userID = $userData['UserID'];
+
+    $ans = isDomainEditor($domainID, $userID);
+    return $ans;
+}
+
+### viewAdmin.php, addAdmin.php, removeAdmin.php
+##
+#
+
+/* Function to get all the admins of a domain and return an array of userID's 
+*/
+function getAdmins($path){
+    $domainID = getPathDomainID($path);
+    $admins = array();
+
+    //Get all editors of this domain and add to array
+    global $conn;
+    $containers = array();
+    $query ="SELECT * FROM `Domain_Roles` WHERE DomainID='".$conn->real_escape_string($domainID)."' AND RoleID='1';";
+    $queryReturn = $conn->query($query);
+    
+    if(!$queryReturn){
+        echo $conn->error;
+    }   
+    
+    if (mysqli_num_rows($queryReturn) >= 1) { 
+        while($row = $queryReturn->fetch_assoc()){
+            $id = $row['UserID'];
+            array_push($admins, $id);
+        }
+    }
+    
+    return $admins;
+}
+
+/* Function to add a new admin to a domain
+*/
+function addAdmin($username, $path){
+    global $conn;
+    //Get data needed
+    $domainID =  getPathDomainID($path);
+    $userData = getUserDataByUsername($username);
+    $userID = $userData['UserID'];
+
+    //Add new editor
+    $query ="INSERT INTO `Domain_Roles` (`DomainID`, `UserID`, `RoleID`) VALUES ('".$conn->real_escape_string($domainID)."', '".$conn->real_escape_string($userID)."', '1');";
+    $conn->query($query);
+}
+
+/* Function to check if a user is an admin to a domain returning T/F
+*/
+function isAdmin($username, $path){
+    global $conn;
+    //Get data needed
+    $domainID =  getPathDomainID($path);
+    $userData = getUserDataByUsername($username);
+    $userID = $userData['UserID'];
+
+    $ans = isDomainAdmin($domainID, $userID);
+    return $ans;
+}
+
+function removeAdmin($userID, $path){
+    global $conn;
+
+    //Get domainID
+    $domainID =  getPathDomainID($path);
+    
+    //Need to get all sub containers
+    $query = "DELETE FROM `Domain_Roles` WHERE DomainID='".$conn->real_escape_string($domainID)."' AND UserID='".$conn->real_escape_string($userID)."' AND RoleID='1';";
     $conn->query($query);
 }
 
@@ -1252,6 +1340,28 @@ function isPublic($path){
 
     //Check if it is public
     $query ="SELECT * FROM `Domain` WHERE DomainID='".$conn->real_escape_string($domainID)."' AND PrivacyID='1';";
+    $queryReturn = $conn->query($query);
+    
+    if(!$queryReturn){
+        echo $conn->error;
+    }   
+    
+    if (mysqli_num_rows($queryReturn)==0) { 
+        return FALSE;
+    } elseif (mysqli_num_rows($queryReturn) >= 1) { 
+        return TRUE;
+    } 
+}
+
+/* Function to check if a domain is public and active, returning T/F
+*/
+function isPublicAndActive($path){
+    //Vars used
+    global $conn;
+    $domainID = getPathDomainID($path);
+
+    //Check if it is public
+    $query ="SELECT * FROM `Domain` WHERE DomainID='".$conn->real_escape_string($domainID)."' AND PrivacyID='1' AND StstusID='1';";
     $queryReturn = $conn->query($query);
     
     if(!$queryReturn){
@@ -1287,6 +1397,27 @@ function isPrivate($path){
     } 
 }
 
+/* Function to check if a domain is private and active, returning T/F
+*/
+function isPrivateAndActive($path){
+     //Vars used
+     global $conn;
+     $domainID = getPathDomainID($path);
+ 
+     //Check if it is public
+     $query ="SELECT * FROM `Domain` WHERE DomainID='".$conn->real_escape_string($domainID)."' AND PrivacyID='2' AND StatusID='1';";
+     $queryReturn = $conn->query($query);
+     
+     if(!$queryReturn){
+         echo $conn->error;
+     }   
+     
+     if (mysqli_num_rows($queryReturn)==0) { 
+         return FALSE;
+     } elseif (mysqli_num_rows($queryReturn) >= 1) { 
+         return TRUE;
+     } 
+}
 /* Function to change a domains privacy state to public
 */
 function changeToPublic($path){
@@ -1317,6 +1448,29 @@ function changeToPrivate($path){
 
     //Add usergroup
     makeUserGroup($path);
+}
+
+/* Function to chechk if a user is a member of a private domains user group
+*/
+function isUserGroupMember($path, $userID){
+    //Vars used
+    global $conn;
+    $userGroupID = getUserGroup($path);
+
+    //Check if the user is in the userGroup
+    $query ="SELECT * FROM `UserGroup_Members` WHERE UserID='".$conn->real_escape_string($userID)."';";
+    $queryReturn = $conn->query($query);
+    
+    if(!$queryReturn){
+        echo $conn->error;
+    }   
+    
+    if (mysqli_num_rows($queryReturn)==0) { 
+        return FALSE;
+    } elseif (mysqli_num_rows($queryReturn) >= 1) { 
+        return TRUE;
+    } 
+
 }
 
 ### Included in editAccess.php
@@ -1475,5 +1629,24 @@ function addUserGroupMember($usergroupid, $userid){
     $query = "INSERT INTO `UserGroup_Members` (`UserGroupID`, `UserID`) VALUES ('".$conn->real_escape_string($usergroupid)."', '".$conn->real_escape_string($userid)."');";
     $conn->query($query);
 }
+
+#### FUNCTIONS FOR DELETING DOMAIN
+### included in Editor/deleteDomain.php
+##
+#
+
+function deleteDomain($path){
+    //Vars used
+    global $conn;
+    $domainID = getPathDomainID($path);
+    $masterID = getDomainContainerID($domainID);
+
+    //Need to get all containers
+    $query = "DELETE FROM `Container` WHERE ContainerID='".$conn->real_escape_string($masterID)."';";
+    $conn->query($query);
+}
+
+
+
 
 ?>
