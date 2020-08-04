@@ -36,7 +36,7 @@
               <a class='nav-link' href='".$directory."Editor/index.php'>Editor</a>
             </li>
             <li class='nav-item active'>
-              <a class='nav-link' href=''>Requests</a>
+              <a class='nav-link' href='".$directory."requestedDomains.php'>Requests</a>
             </li>
           </ul>
         </div>
@@ -62,6 +62,9 @@
             </li>
             <li class='nav-item active'>
               <a class='nav-link' href='".$directory."Editor/index.php'>Editor</a>
+            </li>
+            <li class='nav-item active'>
+              <a class='nav-link' href='".$directory."savedDomains.php'>Saved Domains</a>
             </li>
           </ul>
         </div>

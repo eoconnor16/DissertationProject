@@ -1,8 +1,10 @@
 <?php
 include('Resource/header.php');
 
+//Access check
+
 //Get user data
-$userid = 4;//$_SESSION['userid'];
+$userid = $_SESSION['userid'];
 $savedDomains = getSavedDomains($userid);
 
 //Display all saved domains
@@ -13,7 +15,10 @@ echo "<div class='container'>
           ";
 if(sizeof($savedDomains) > 0){
     for ($i = 0; $i < count($savedDomains); $i++)  {
+        $id = $savedDomains[$i]['DomainID'];
         $name = $savedDomains[$i]['Name'];
+        $containerid = $savedDomains[$i]['ContainerID'];
+       
         echo "<div>
           <a style='display:inline' href='view.php?Path=$name'>$name</a>
          </div>";

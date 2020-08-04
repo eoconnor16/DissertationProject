@@ -1646,6 +1646,110 @@ function deleteDomain($path){
     $conn->query($query);
 }
 
+#### FUNCTIONS FOR REVIEWING REQUESTED DOMAINS
+### included in requestedDomains.php
+##
+#
+
+/* Function to return an array of all requested domains
+*/
+function getAllDomainRequest(){
+    global $conn;
+    $domains = array();
+    //Get all public domains
+    $query = "SELECT * FROM `Domain` WHERE StatusID='3';";
+    $queryReturn = $conn->query($query);
+
+    while($row = $queryReturn->fetch_assoc()){
+        $id = $row['DomainID'];
+        $domainData = getDomainData($id);
+        array_push($domains, $domainData);
+    }
+
+    return $domains;
+}
+
+/* Function to accpet a domain request, making the domain active
+*/
+function acceptDomainRequest($domainID){
+    global $conn;
+    $query = "UPDATE `Domain` SET `StatusID` = '1' WHERE `Domain`.`DomainID` = '".$conn->real_escape_string($domainID)."';";
+    $conn->query($query);
+}
+
+/* Function to delete a domain request, deleting the domain
+*/
+function deleteDomainRequest($domainID){
+    $data = getDomainData($domainID);
+    $path = $data['Name'];
+    deleteDomain($path);
+}
+
+#### FUNCTIONS FOR SAVING DOMAINS PROCESS
+### included in saveDomainButton.php, savedDomains.php
+##
+#
+
+/* Function to check if a user has a domain saved, returning T/F
+*/
+function isDomainSaved($userID, $path){
+    global $conn;
+    $domainID = getPathDomainID($path);
+    $query ="SELECT * FROM User_Saved_Domains WHERE UserID='".$conn->real_escape_string($userID)."' AND DomainID='".$conn->real_escape_string($domainID)."';";
+    $queryReturn = $conn->query($query);
+    
+    if(!$queryReturn){
+        echo $conn->error;
+    } 
+    
+    if (mysqli_num_rows($queryReturn)==0) { 
+        return FALSE;
+    } elseif (mysqli_num_rows($queryReturn)==1) { 
+        return TRUE;
+    } elseif (mysqli_num_rows($queryReturn)>1) { 
+        return 'ERROR: Multiple records';
+    }
+
+}
+
+/* Function to save a domain to a users saved domains
+*/
+function saveDomain($userID, $path){
+    global $conn;
+    $domainID = getPathDomainID($path);
+    $query ="INSERT INTO `User_Saved_Domains` (`UserID`, `DomainID`) VALUES ('".$conn->real_escape_string($userID)."', '".$conn->real_escape_string($domainID)."');";
+    $conn->query($query);
+}
+
+/* Function to save a domain to a users saved domains
+*/
+function removeSavedDomain($userID, $path){
+    global $conn;
+    $domainID = getPathDomainID($path);
+    $query ="DELETE FROM `User_Saved_Domains` WHERE UserID='".$conn->real_escape_string($userID)."' AND DomainID='".$conn->real_escape_string($domainID)."';";
+    $conn->query($query);
+}
+
+/* Function to return an array of a users saved doamin
+*/
+function getSavedDomains($userID){
+    global $conn;
+    $domains = array();
+
+    //Get all saved domains
+    $query = "SELECT * FROM `User_Saved_Domains` WHERE UserID='".$conn->real_escape_string($userID)."';";
+    $queryReturn = $conn->query($query);
+
+    if (mysqli_num_rows($queryReturn) >= 1){
+        while($row = $queryReturn->fetch_assoc()){
+            $id = $row['DomainID'];
+            $domainData = getDomainData($id);
+            array_push($domains, $domainData);
+        }
+    }
+
+    return $domains;
+}
 
 
 

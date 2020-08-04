@@ -11,7 +11,6 @@ if(!hasAccess($userID, $path, accessLevel::admin)){
 }
 
 //1 - Get Editor Data
-
 $editor = $_REQUEST['Editor'];
 $userData = getUserDataByUsername($editor);
 $userID = $userData['UserID'];

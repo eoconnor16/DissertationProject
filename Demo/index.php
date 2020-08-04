@@ -20,9 +20,7 @@ if(isset($_SESSION['userid'])){
 
 //Print all domains
 for ($i = 0; $i < count($domains); $i++)  {
- $id = $domains[$i]['DomainID'];
  $name = $domains[$i]['Name'];
- $containerid = $domains[$i]['ContainerID'];
 
  echo "<div>
    <a style='display:inline' href='view.php?Path=$name'>$name</a>
