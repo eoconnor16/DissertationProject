@@ -1,14 +1,21 @@
 <?php
     include('Resource/header.php');
-    $path = $_REQUEST['Path'];
-    $containerid = getPathContainerID($path);
+    $passedPath = $_REQUEST['Path'];
     
-    echo "<div class='container'>
+    //Check if passed path is valid
+    $containerid = getPathContainerID($passedPath);
+    $path = getPath($containerid);
+    if(isset($path)){
+      echo "<div class='container'>
             <div class='row'>
               <h2>Path: $path</h2>
             </div>
           ";
-
+    } else {
+      //Redirect to error page
+      header("Location: Error/404.php");
+    }
+    
     //Return Link
     if (getPathLength($path) <= 1){
       echo "<div class='row'>
@@ -19,7 +26,7 @@
       $oldPath = getParentPath($path);
       echo "<div class='row'>
               <div class='col'>
-                <a style='display:inline' href='view.php?Path=$oldPath'>Back</a>
+                <a style='display:inline' href='view.php?Path=". urlencode($oldPath) ."'>Back</a>
               </div>";
     }
 
@@ -38,7 +45,7 @@
         $newPath = "$path/$name";
 
         echo "<div>
-          <p style='display:inline'>Container: </p><a style='display:inline' href='view.php?Path=$newPath'>$name</a>
+          <p style='display:inline'>Container: </p><a style='display:inline' href='view.php?Path=". urlencode($newPath) ."'>$name</a>
          </div>";
     }
 
@@ -47,7 +54,7 @@
         $newPath = "$path/$pagename";
        
         echo "<div>
-          <p style='display:inline'>Page: </p><a style='display:inline' href='page.php?Path=$newPath'>$pagename</a>
+          <p style='display:inline'>Page: </p><a style='display:inline' href='page.php?Path=". urlencode($newPath) ."''>$pagename</a>
          </div>";
     }
 

@@ -23,7 +23,7 @@ for ($i = 0; $i < count($domains); $i++)  {
  $name = $domains[$i]['Name'];
 
  echo "<div>
-   <a style='display:inline' href='view.php?Path=$name'>$name</a>
+    <a style='display:inline' href='view.php?Path=". urlencode($name) ."'>$name</a>
   </div>";
 }
 

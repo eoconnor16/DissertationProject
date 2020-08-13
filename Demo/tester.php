@@ -1,26 +1,12 @@
 <?php
 include('Resource/header.php');
 
-//Get user data
-$userid = 4;//$_SESSION['userid'];
-$savedDomains = getSavedDomains($userid);
+$name = "Sports & Other things";//$domains[$i]['Name'];
+echo urlencode($name);
 
-//Display all saved domains
-echo "<div class='container'>
-            <div class='row'>
-              <h1>Saved Domains</h1>
-            </div>
-          ";
-if(sizeof($savedDomains) > 0){
-    for ($i = 0; $i < count($savedDomains); $i++)  {
-        $name = $savedDomains[$i]['Name'];
-        echo "<div>
-          <a style='display:inline' href='view.php?Path=$name'>$name</a>
-         </div>";
-       }
-} else {
-    echo "You have not saved any domains";
-}
+echo "<div>
+  <a style='display:inline' href='view.php?Path=". urlencode($name) ."'>$name</a>
+ </div>";
 
 include('Resource/footer.php');
 ?>

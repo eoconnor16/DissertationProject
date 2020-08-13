@@ -80,7 +80,7 @@
     } else {
       echo "
       <nav class='navbar navbar-expand-lg navbar-dark bg-dark'>
-        <a class='navbar-brand' href='index.php'>Wiki</a>
+        <a class='navbar-brand' href='".$directory."index.php'>Wiki</a>
 
         <div class='navbar-nav-scroll' id='navbarNav'>
           <ul class='navbar-nav'>

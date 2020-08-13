@@ -41,7 +41,7 @@ function getPathContainerID($path){
     $parts = explode("/",$path);
     
     if (sizeof($parts)<1 || $parts[0] == "") {
-        exit("Error: invalid path");
+        
 
     } elseif (sizeof($parts)==1){
         //echo "<b>Option One</b>";
@@ -448,8 +448,6 @@ function runLoggedInCheck($location){
     } 
 }
 
-
-
 /* Function to check if a user has the appropriate access to a path, returning T/F
 */
 function hasAccess($userID, $path, $accessLevel){
@@ -470,7 +468,7 @@ function hasAccess($userID, $path, $accessLevel){
                 $ans = TRUE;
             } elseif(isPrivateAndActive($path)){
                 //If private we need to check if user has access
-                if(isUserGroupMember($path, $userID)){
+                if(isUserGroupMember($path, $userID) || isDomainEditor($domainID, $userID) || isDomainAdmin($domainID, $userID) == TRUE || isSystemAdmin($userID) == TRUE ){
                     $ans = TRUE;
                 }
             }
@@ -497,6 +495,31 @@ function hasAccess($userID, $path, $accessLevel){
 
       return $ans;
 
+}
+
+/* Function to check if a user has a certain access level
+*/
+function checkUserType($userID, $accessLevel){
+    //Vars used
+    $ans = FALSE;
+    $public = accessLevel::readOnly;
+    $systemAdmin = accessLevel::systemAdmin;
+
+    //Check asscess level
+    switch ($accessLevel){
+        case $public:
+            if(isLoggedIn()){
+                $ans = TRUE;
+            } 
+            break;
+        case $systemAdmin:
+            if(isSystemAdmin($userID) == TRUE){
+                $ans = TRUE;
+            }
+          break;
+      }
+
+      return $ans;
 }
 
 #### FUNCTION FOR CREATING DOMAIN

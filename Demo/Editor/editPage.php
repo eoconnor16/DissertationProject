@@ -38,11 +38,12 @@ if(isset($_POST['request'])){
     $nameError = "Please enter a valid name";
   }
 
-  //Check if the user has included any urls
+  //Check if the user has included any urls !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   $url1 = "page.php?Path=";
-  $url2 = "http://eoconnor16.lampt.eeecs.qub.ac.uk/Demo/view.php?Path=";
+  $url2 = "view.php?Path=";
   $nMarkdown = str_replace("#PAGE#",$url1,$nMarkdown);
   $nMarkdown = str_replace("#CONTAINER#",$url2,$nMarkdown);
+  //!!!!!!!!!!!!!!!!!!!!!!!!!
 
   //If passed the checks add save changes to db
   if($check == TRUE){

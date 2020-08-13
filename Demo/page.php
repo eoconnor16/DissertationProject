@@ -5,7 +5,7 @@ include('Resource/header.php');
 $path = $_REQUEST['Path'];
 $oldPath = getParentPath($path);
       echo "<div>
-              <a style='display:inline' href='view.php?Path=$oldPath'>Back</a>
+              <a style='display:inline' href='view.php?Path=". urlencode($oldPath) ."''>Back</a>
             </div><br>";
 $pageid = getPathPageID($path);
 echo ConvertPageMarkdown($pageid);

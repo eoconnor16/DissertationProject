@@ -4,13 +4,12 @@ include('Resource/header.php');
 //Set Access
 runLoggedInCheck('index.php');
 $userID = $_SESSION['userid'];
-if(!hasAccess($userID, $path, accessLevel::systemAdmin)){
+if(!checkUserType($userID, accessLevel::systemAdmin)){
     header("Location: index.php");
 }
 
 //Get all requested domains
 $requests = getAllDomainRequest();
-print_r($requests);
 
 //Validate form
 for($i = 0; $i < sizeof($requests); $i++){
